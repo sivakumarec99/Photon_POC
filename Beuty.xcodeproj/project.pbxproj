@@ -34,22 +34,9 @@
 		15CC0C3C2DDDE020005D646D /* BeutyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeutyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		15CC0CDF2DDE064A005D646D /* Exceptions for "Beuty" folder in "Beuty" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 15CC0C232DDDE020005D646D /* Beuty */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		15CC0C262DDDE020005D646D /* Beuty */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				15CC0CDF2DDE064A005D646D /* Exceptions for "Beuty" folder in "Beuty" target */,
-			);
 			path = Beuty;
 			sourceTree = "<group>";
 		};

@@ -30,10 +30,11 @@ struct ShopView: View {
                     }
                 } else {
                     // --- Actual Product Data ---
-                    ForEach(viewModel.products) { product in
-                        productCard(for: product)
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        ForEach(viewModel.products) { product in
+                            productGridTile(for: product)
+                        }.onDelete(perform: delete)
                     }
-                    .onDelete(perform: delete)
                 }
             }
             .navigationTitle("Products")
@@ -73,55 +74,42 @@ struct ShopView: View {
     }
     
     @ViewBuilder
-    private func productCard(for product: Product) -> some View {
-        HStack(alignment: .top, spacing: 15) {
-            // --- Updated AsyncImage for Product Image ---
-            // This assumes 'product.imageUrl' is a non-optional String.
-            // URL(string:) still returns an optional URL (URL?),
-            // as the string might not be a valid URL format.
-            AsyncImage(url: URL(string: product.image)) { phase in // Changed here
-                switch phase {
-                case .empty:  // Placeholder while loading or if URL is invalid
-                    PlaceholderShape(
-                        color: placeholderBackgroundColor, // Make sure this is defined in your View's scope
-                        height: 80, width: 80 // Corrected parameter order if PlaceholderShape expects width then height
-                    )
-                    .shimmer(isActive: true, gradientColors: shimmerGradient) // Make sure shimmerGradient is defined
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                case .failure:  // Placeholder on error (e.g., network issue, or if URL was valid but image couldn't be fetched)
-                    ZStack {
-                        PlaceholderShape(
-                            color: placeholderBackgroundColor,
-                            height: 80, width: 80
-                        )
-                        Image(systemName: "photo.fill")
-                            .foregroundColor(.gray)
-                    }
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            .frame(width: 80, height: 80) // Ensure the frame is on AsyncImage itself or its container
+    private func productGridTile(for product: Product) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                ProductImageView(imageUrl: product.image, width: 150, height: 150)
+                    .environmentObject(viewModel)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text(product.title)
-                    .font(.headline)
-                Text("$\(product.price, specifier: "%.2f")")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Text(product.description)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .lineLimit(3)
+                Button {
+                    viewModel.toggleFavorite(for: product)
+                } label: {
+//                    Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+//                        .padding(8)
+//                        .foregroundColor(product.isFavorite ? .red : .gray)
+//                        .background(.ultraThinMaterial)
+//                        .clipShape(Circle())
+//                        .shadow(radius: 2)
+                }
+                .padding(6)
             }
+
+            Text(product.title)
+                .font(.headline)
+                .lineLimit(2)
+
+            Text("$\(product.price, specifier: "%.2f")")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
-        .padding(.vertical, 8)
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
     }
+
+
+
     
     private var productPlaceholderCard: some View {
            HStack(alignment: .top, spacing: 15) {
@@ -224,3 +212,30 @@ struct PlaceholderShape: View {
             .cornerRadius(cornerRadius)
     }
 }
+
+struct ProductImageView: View {
+    @EnvironmentObject var viewModel: ProductViewModel
+    let imageUrl: String
+    let width: CGFloat
+    let height: CGFloat
+
+    var body: some View {
+        Group {
+            if let url = URL(string: imageUrl),
+               let image = viewModel.imageCache[url] {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else {
+                PlaceholderShape(color: .gray, height: height, width: width)
+                    .shimmer(isActive: true, gradientColors: [.gray, .white])
+            }
+        }
+        .frame(width: width, height: height)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .task {
+            await viewModel.loadImage(for: imageUrl)
+        }
+    }
+}
+

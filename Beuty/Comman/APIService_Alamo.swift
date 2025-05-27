@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import UIKit
 
 actor APIService {
     private let domainURL: URL
@@ -16,7 +17,7 @@ actor APIService {
     init(domainURL: URL) {
         self.domainURL = domainURL
 
-        // Configure Alamofire session with SSL trust disabled (dev only)
+        // Allow insecure domains (dev only)
         self.session = Session(
             serverTrustManager: ServerTrustManager(evaluators: [
                 "fakestoreapi.com": DisabledTrustEvaluator()
@@ -28,10 +29,11 @@ actor APIService {
         case invalidURL
         case invalidResponse
         case decodingError
+        case imageConversionFailed
         case unknown(Error)
     }
 
-    // Generic GET
+    // MARK: - Generic GET
     func get<T: Decodable>(endpoint: String) async throws -> T {
         guard let url = URL(string: endpoint, relativeTo: domainURL) else {
             throw APIError.invalidURL
@@ -42,7 +44,7 @@ actor APIService {
             .serializingDecodable(T.self).value
     }
 
-    // Generic POST
+    // MARK: - Generic POST
     func post<T: Decodable, U: Encodable>(endpoint: String, body: U) async throws -> T {
         guard let url = URL(string: endpoint, relativeTo: domainURL) else {
             throw APIError.invalidURL
@@ -58,7 +60,7 @@ actor APIService {
         .serializingDecodable(T.self).value
     }
 
-    // Generic PUT (Update)
+    // MARK: - PUT (Update)
     func update<T: Decodable, U: Encodable>(endpoint: String, body: U) async throws -> T {
         guard let url = URL(string: endpoint, relativeTo: domainURL) else {
             throw APIError.invalidURL
@@ -74,7 +76,7 @@ actor APIService {
         .serializingDecodable(T.self).value
     }
 
-    // DELETE
+    // MARK: - DELETE
     func delete(endpoint: String) async throws {
         guard let url = URL(string: endpoint, relativeTo: domainURL) else {
             throw APIError.invalidURL
@@ -86,6 +88,49 @@ actor APIService {
         )
         .validate()
         .serializingData().value
+    }
+
+    // MARK: ✅ - DOWNLOAD IMAGE USING ALAMOFIRE
+    func downloadImage(from urlString: String) async throws -> UIImage? {
+        guard let url = URL(string: urlString) else { return nil }
+
+        let data = try await session.request(url).serializingData().value
+        return UIImage(data: data)
+    }
+
+    // MARK: ✅ - UPLOAD IMAGE
+    func uploadImage(
+        to endpoint: String,
+        image: UIImage,
+        imageKey: String = "file",  // key used by server (e.g., "file" or "image")
+        additionalParameters: [String: String] = [:]
+    ) async throws -> Data {
+        guard let imageData = image.jpegData(compressionQuality: 0.8),
+              let url = URL(string: endpoint, relativeTo: domainURL) else {
+            throw APIError.imageConversionFailed
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            session.upload(
+                multipartFormData: { formData in
+                    formData.append(imageData, withName: imageKey, fileName: "upload.jpg", mimeType: "image/jpeg")
+                    for (key, value) in additionalParameters {
+                        formData.append(Data(value.utf8), withName: key)
+                    }
+                },
+                to: url,
+                method: .post
+            )
+            .validate()
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 }
 

@@ -15,7 +15,7 @@ struct MainTabView: View {
     private let tabItems: [TabItemModel] = [
         TabItemModel(title: "Home", icon: "house.fill", view: AnyView(HomeView())),
         TabItemModel(title: "Shop", icon: "bag.fill", view: AnyView(ShopView())),
-        TabItemModel(title: "MyCard", icon: "creditcard.fill", view: AnyView(MyCardView())),
+        TabItemModel(title: "MyCard", icon: "creditcard.fill", view: AnyView(CardListView())),
         TabItemModel(title: "Basket", icon: "cart.fill", view: AnyView(BasketView(viewModel: CartViewModel()))),
         TabItemModel(title: "More", icon: "ellipsis.circle.fill", view: AnyView(MoreView()))
     ]

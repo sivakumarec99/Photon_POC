@@ -18,6 +18,7 @@ class CardViewModel: ObservableObject {
         fetchCards()
     }
     
+    // Save a new card or update an existing one
     func saveCard(_ card: Card) {
         let key = keyPrefix + card.id.uuidString
         if let encoded = try? JSONEncoder().encode(card) {
@@ -26,6 +27,7 @@ class CardViewModel: ObservableObject {
         }
     }
     
+    // Fetch all cards from the keychain
     func fetchCards() {
         var loadedCards: [Card] = []
         for key in KeychainWrapper.standard.allKeys() where key.hasPrefix(keyPrefix) {
@@ -36,4 +38,17 @@ class CardViewModel: ObservableObject {
         }
         self.cards = loadedCards
     }
+    
+    // Delete a card from the keychain
+    func deleteCard(_ card: Card) {
+        let key = keyPrefix + card.id.uuidString
+        KeychainWrapper.standard.removeObject(forKey: key)
+        fetchCards() // refresh
+    }
+    
+    // Update a card (this is essentially the same as saveCard)
+    func updateCard(_ card: Card) {
+        saveCard(card) // Reuse saveCard method for updating
+    }
 }
+

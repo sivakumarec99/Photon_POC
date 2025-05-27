@@ -8,12 +8,6 @@
 
 import SwiftUI
 
-struct MyCardView: View {
-    var body: some View {
-        CardListView()
-    }
-}
-
 struct CardListView: View {
     @StateObject private var viewModel = CardViewModel()
     
@@ -23,6 +17,7 @@ struct CardListView: View {
                 if viewModel.cards.isEmpty {
                     Text("No Cards Saved").foregroundColor(.gray)
                 } else {
+                    
                     List(viewModel.cards) { card in
                         VStack(alignment: .leading, spacing: 8) {
                             Text("💳 \(card.cardNumber)")

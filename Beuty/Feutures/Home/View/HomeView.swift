@@ -10,7 +10,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var selectedTopTab = 0
-    
+    @State private var navigateToMoreView = false
     var body: some View {
         VStack(spacing: 0) {
             topBar
@@ -24,28 +24,31 @@ struct HomeView: View {
     }
     
     var HomeBody: some View {
-        
-        VStack{
-            ScrollView(.vertical, showsIndicators: false) {
-                AdvantageCardView(
-                    onSignUp: {
-                        print("Sign Up Tapped")
-                        // Navigate or present sign-up flow
-                    },
-                    onLinkCard: {
-                        print("Link Card Tapped")
-                        // Navigate or present link card flow
+            VStack{
+                ScrollView(.vertical, showsIndicators: false) {
+                    AdvantageCardView(
+                        onSignUp: {
+                            print("Sign Up Tapped")
+                            selectedTopTab = 4
+                        },
+                        onLinkCard: {
+                            print("Link Card Tapped")
+                            // Navigate or present link card flow
+                        }
+                    )
+                    .padding(.top)
+                    VStack(spacing: 16) {
+                        ForEach(mockOffers) { product in
+                            OfferCardView(product: product)
+                        }
                     }
-                )
-                .padding(.top)
-                VStack(spacing: 16) {
-                    ForEach(mockOffers) { product in
-                        OfferCardView(product: product)
-                    }
+                    .padding(.top)
                 }
-                .padding(.top)
             }
-        }
+            .onAppear(){
+                
+            }
+                
     }
     
     // MARK: - Top Profile and Notification
@@ -60,7 +63,7 @@ struct HomeView: View {
                 .padding(.leading, 5)
             
             Spacer()
-            
+             
             Image(systemName: "bell.badge.fill")
                 .font(.system(size: 24))
                 .foregroundColor(.orange)
@@ -74,7 +77,7 @@ struct HomeView: View {
             Image(systemName: "location.fill")
                 .foregroundColor(.green)
             Text("Showing my location: 123 Main Street, City")
-                .font(.subheadline)
+                .font(.subheadline) 
                 .foregroundColor(.gray)
             Spacer()
         }

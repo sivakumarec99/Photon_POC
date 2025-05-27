@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct BeutyApp: App {
+    
+    // demo App
+    @AppStorage("hasSeenIntro") var hasSeenIntro: Bool = false
+
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            if hasSeenIntro {
+                MainTabView()
+            } else {
+                IntroFlowView(hasSeenIntro: $hasSeenIntro)
+            }
         }
     }
 }

@@ -21,5 +21,10 @@
 			</dict>
 		</dict>
 	</dict>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to show it on the map.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location for continuous tracking.</string>
+
 </dict>
 </plist>

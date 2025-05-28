@@ -15,4 +15,5 @@ struct Card: Codable, Identifiable {
     var cvv: String
     var name: String
     var bankName: String
+    var cardType: String  // e.g., "Visa", "Mastercard"
 }

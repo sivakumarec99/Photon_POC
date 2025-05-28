@@ -81,7 +81,7 @@ struct CardListView: View {
             .sheet(isPresented: $showCardEntry) {
                 CardEntryView(viewModel: viewModel)
             }
-            .sheet(isPresented: $isShowingLogin){
+            .fullScreenCover(isPresented: $isShowingLogin){
                 LoginViewFirebase()
             }
             .onAppear(){

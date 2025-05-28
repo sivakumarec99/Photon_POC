@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct LoginViewFirebase: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = AuthViewModel_FiireBase()
     @State private var showPassword = false
     @State private var navigateToRegister = false
@@ -120,7 +121,13 @@ struct LoginViewFirebase: View {
             .sheet(isPresented: $showForgotPassword) {
                 ForgotPasswordViewFirebase()
             }
+            .onChange(of: vm.isLoginSuccessful) {
+                if $0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }
-

@@ -7,15 +7,20 @@
 
 
 import SwiftUI
+import FirebaseAuth
 
 struct CardListView: View {
-   //
+    //
     @StateObject private var viewModel = CardViewModel()
     
     //
     @State private var showCardEntry = false
     @State private var showDeleteAlert = false
     @State private var cardToDelete: Card?
+    
+    // Bools
+    
+    @State var isShowingLogin: Bool = false
     
     
     var body: some View {
@@ -76,7 +81,17 @@ struct CardListView: View {
             .sheet(isPresented: $showCardEntry) {
                 CardEntryView(viewModel: viewModel)
             }
-           
+            .sheet(isPresented: $isShowingLogin){
+                LoginViewFirebase()
+            }
+            .onAppear(){
+                if Auth.auth().currentUser == nil {
+                    isShowingLogin = true
+                } else {
+                    viewModel.fetchCards()
+                }
+            }
+            
         }
     }
     private func deleteCard(at offsets: IndexSet) {

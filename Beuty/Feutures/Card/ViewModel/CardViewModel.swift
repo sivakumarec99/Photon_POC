@@ -8,12 +8,15 @@
 
 import Foundation
 import SwiftKeychainWrapper
+import FirebaseAuth
 
 class CardViewModel: ObservableObject {
     @Published var cards: [Card] = []
-    
-    private let keyPrefix = "stored_card_"
-    
+        
+    private var keyPrefix: String {
+        guard let uid = Auth.auth().currentUser?.uid else { return "stored_card_" }
+        return "stored_card_\(uid)_"
+    }
     init() {
         fetchCards()
     }

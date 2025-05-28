@@ -21,6 +21,8 @@
 		15379F772DE5FBEC0004845A /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 15379F762DE5FBEC0004845A /* FirebaseFunctionsCombine-Community */; };
 		15379F792DE5FBEC0004845A /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 15379F782DE5FBEC0004845A /* FirebaseStorage */; };
 		15379F7B2DE5FBEC0004845A /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 15379F7A2DE5FBEC0004845A /* FirebaseStorageCombine-Community */; };
+		159C082A2DE713E6005031F5 /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 159C08292DE713E6005031F5 /* FirebaseInAppMessaging-Beta */; };
+		159C082C2DE713E6005031F5 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 159C082B2DE713E6005031F5 /* FirebaseMessaging */; };
 		15CC0C6B2DDDE542005D646D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 15CC0C6A2DDDE542005D646D /* Alamofire */; };
 		15CC0D932DDF3872005D646D /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 15CC0D922DDF3872005D646D /* SwiftKeychainWrapper */; };
 /* End PBXBuildFile section */
@@ -94,8 +96,10 @@
 				15379F732DE5FBEC0004845A /* FirebaseFirestoreCombine-Community in Frameworks */,
 				15379F7B2DE5FBEC0004845A /* FirebaseStorageCombine-Community in Frameworks */,
 				15CC0C6B2DDDE542005D646D /* Alamofire in Frameworks */,
+				159C082C2DE713E6005031F5 /* FirebaseMessaging in Frameworks */,
 				15379F772DE5FBEC0004845A /* FirebaseFunctionsCombine-Community in Frameworks */,
 				15379F6F2DE5FBEC0004845A /* FirebaseDynamicLinks in Frameworks */,
+				159C082A2DE713E6005031F5 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				15379F692DE5FBEC0004845A /* FirebaseCore in Frameworks */,
 				15379F792DE5FBEC0004845A /* FirebaseStorage in Frameworks */,
 				15379F6D2DE5FBEC0004845A /* FirebaseDatabase in Frameworks */,
@@ -184,6 +188,8 @@
 				15379F762DE5FBEC0004845A /* FirebaseFunctionsCombine-Community */,
 				15379F782DE5FBEC0004845A /* FirebaseStorage */,
 				15379F7A2DE5FBEC0004845A /* FirebaseStorageCombine-Community */,
+				159C08292DE713E6005031F5 /* FirebaseInAppMessaging-Beta */,
+				159C082B2DE713E6005031F5 /* FirebaseMessaging */,
 			);
 			productName = Beuty;
 			productReference = 15CC0C242DDDE020005D646D /* Beuty.app */;
@@ -756,6 +762,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 15379F1B2DE5D9280004845A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		159C08292DE713E6005031F5 /* FirebaseInAppMessaging-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15379F1B2DE5D9280004845A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessaging-Beta";
+		};
+		159C082B2DE713E6005031F5 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15379F1B2DE5D9280004845A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		15CC0C6A2DDDE542005D646D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

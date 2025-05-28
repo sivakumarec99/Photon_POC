@@ -7,10 +7,13 @@
 
 import Foundation
 import SwiftUI
+import CoreLocation
 
 struct HomeView: View {
     @State private var selectedTopTab = 0
     @State private var navigateToMoreView = false
+    @State private var showMapView = false
+    @State private var currentAddress: String = "Fetching location..."
     var body: some View {
         VStack(spacing: 0) {
             topBar
@@ -21,6 +24,9 @@ struct HomeView: View {
             bottomTabBar
         }
         .edgesIgnoringSafeArea(.bottom)
+        .sheet(isPresented: $showMapView) {
+            MapScreen()
+        }
     }
     
     var HomeBody: some View {
@@ -46,7 +52,21 @@ struct HomeView: View {
                 }
             }
             .onAppear(){
-                
+                let locationManager = CLLocationManager()
+                locationManager.requestWhenInUseAuthorization()
+                if let location = locationManager.location {
+                    let geocoder = CLGeocoder()
+                    geocoder.reverseGeocodeLocation(location) { placemarks, error in
+                        if let placemark = placemarks?.first {
+                            let address = [
+                                placemark.name,
+                                placemark.locality,
+                                placemark.administrativeArea
+                            ].compactMap { $0 }.joined(separator: ", ")
+                            currentAddress = address
+                        }
+                    }
+                }
             }
                 
     }
@@ -73,16 +93,20 @@ struct HomeView: View {
 
     // MARK: - Location Bar
     var locationBar: some View {
-        HStack {
-            Image(systemName: "location.fill")
-                .foregroundColor(.green)
-            Text("Showing my location: 123 Main Street, City")
-                .font(.subheadline) 
-                .foregroundColor(.gray)
-            Spacer()
+        Button(action: {
+            showMapView = true
+        }) {
+            HStack {
+                Image(systemName: "location.fill")
+                    .foregroundColor(.green)
+                Text("Showing my location: \(currentAddress)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 10)
         }
-        .padding(.horizontal)
-        .padding(.bottom, 10)
     }
 
     // MARK: - Top Tabs (Shop / Healthcare)
@@ -207,5 +231,3 @@ struct AdvantageCardView: View {
         }
     }
 }
-
-

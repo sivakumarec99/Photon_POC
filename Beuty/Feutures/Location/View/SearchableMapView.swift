@@ -7,7 +7,7 @@
 
 import SwiftUI
 import CoreLocation
-import _MapKit_SwiftUI
+import GoogleMaps
 
 
 // MARK: - Map View
@@ -15,10 +15,11 @@ struct SearchableMapView: View {
     @StateObject var locationManager = LocationManager()
     @StateObject var searchService = LocationSearchService()
 
-    @State private var region = MKCoordinateRegion()
     @State private var selectedLocation: CLLocationCoordinate2D?
     @State private var selectedAddress: String = ""
     @State private var searchText = ""
+    @State private var mapType: GMSMapViewType = .normal
+    @State private var mapZoom: Float = 15
 
     var body: some View {
         VStack {
@@ -35,7 +36,6 @@ struct SearchableMapView: View {
                     Button {
                         let loc = item.placemark.coordinate
                         selectedLocation = loc
-                        region.center = loc
                         searchService.reverseGeocode(location: item.placemark.location!) { address in
                             selectedAddress = address ?? ""
                         }
@@ -53,25 +53,22 @@ struct SearchableMapView: View {
                 .frame(height: 200)
             }
 
-            // Map
-            Map(coordinateRegion: $region,
-                interactionModes: .all,
-                showsUserLocation: true,
-                annotationItems: selectedLocation.map { [MapPinItem(coordinate: $0)] } ?? []) { item in
-                MapMarker(coordinate: item.coordinate, tint: .blue)
-            }
-            .onAppear {
-                if let loc = locationManager.currentLocation {
-                    region = MKCoordinateRegion(center: loc.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-                    selectedLocation = loc.coordinate
-                    searchService.reverseGeocode(location: loc) { address in
-                        selectedAddress = address ?? ""
+            // Google Map View
+            if let loc = selectedLocation {
+                GoogleMapView(coordinate: loc, zoom: mapZoom, mapType: mapType)
+                    .frame(height: 300)
+                    .cornerRadius(12)
+                    .padding()
+
+                HStack {
+                    Button("Zoom In") { mapZoom += 1 }
+                    Button("Zoom Out") { mapZoom -= 1 }
+                    Button("Toggle Map Type") {
+                        mapType = mapType == .normal ? .satellite : .normal
                     }
                 }
+                .padding(.horizontal)
             }
-            .frame(height: 300)
-            .cornerRadius(12)
-            .padding()
 
             // Selected Address
             if !selectedAddress.isEmpty {
@@ -87,12 +84,43 @@ struct SearchableMapView: View {
         }
         .navigationTitle("Location Picker")
         .padding()
+        .onAppear {
+            if let loc = locationManager.currentLocation {
+                selectedLocation = loc.coordinate
+                searchService.reverseGeocode(location: loc) { address in
+                    selectedAddress = address ?? ""
+                }
+            }
+        }
     }
 
     // Map Annotation Helper
     struct MapPinItem: Identifiable {
         let id = UUID()
         let coordinate: CLLocationCoordinate2D
+    }
+}
+
+struct GoogleMapView: UIViewRepresentable {
+    var coordinate: CLLocationCoordinate2D
+    var zoom: Float
+    var mapType: GMSMapViewType
+
+    func makeUIView(context: Context) -> GMSMapView {
+        let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: zoom)
+        let mapView = GMSMapView(frame: .zero, camera: camera)
+        mapView.mapType = mapType
+        let marker = GMSMarker(position: coordinate)
+        marker.map = mapView
+        return mapView
+    }
+
+    func updateUIView(_ uiView: GMSMapView, context: Context) {
+        uiView.camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: zoom)
+        uiView.mapType = mapType
+        uiView.clear()
+        let marker = GMSMarker(position: coordinate)
+        marker.map = uiView
     }
 }
 

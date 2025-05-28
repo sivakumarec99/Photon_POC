@@ -11,6 +11,8 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseMessaging
+import GoogleMaps
+import GooglePlaces
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
@@ -23,6 +25,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Optional: listen for Firebase Messaging token
         Messaging.messaging().delegate = self
         
+        GMSServices.provideAPIKey("AIzaSyBy8T7PjTf68s35t_ixlobLlCn0pYiq758")
+        GMSPlacesClient.provideAPIKey("AIzaSyBy8T7PjTf68s35t_ixlobLlCn0pYiq758")
         return true
     }
 }
